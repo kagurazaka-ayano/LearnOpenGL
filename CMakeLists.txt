@@ -3,10 +3,10 @@ project(OpenGL)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(INCLUDE_DIR dependencies/glfw/include dependencies/glad/include)
-set(LIB_DIR dependencies/glfw/lib)
+set(INCLUDE_DIR dependencies/glfw/include dependencies/glad/include dependencies/spdlog/include include/OpenGL)
+set(LIB_DIR dependencies/glfw/lib dependencies/spdlog/lib)
 
-file(GLOB SRC "src/*.cpp")
+file(GLOB SRC "src/*.cpp" "src/3dObjects/*.cpp")
 
 add_executable(${PROJECT_NAME} ${SRC} dependencies/glad/src/glad.c)
 
