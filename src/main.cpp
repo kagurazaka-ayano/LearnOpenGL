@@ -1,10 +1,8 @@
 #include <glad/glad.h>
-#include <glfw3.h>
+#include <glfw/glfw3.h>
 #include <iostream>
 #include <3dObjects/Point3D.h>
-#include <fileManager.h>
-#include <cmath>
-#include <ctime>
+#include <managers/FileManagerOld.h>
 
 #define WIDTH 800
 #define HEIGHT 600
@@ -15,7 +13,6 @@ void processInput(GLFWwindow *window);
 
 int main()
 {
-    time(nullptr);
     if (!glfwInit()) return -1;
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -32,7 +29,6 @@ int main()
         std::cout<<"Failed to initialize GLAD"<<std::endl;
         return -1;
     }
-
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
     Point3D pointSet[] = {

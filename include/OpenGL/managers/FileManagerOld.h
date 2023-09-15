@@ -1,9 +1,9 @@
-#ifndef OPENGL_FILEMANAGER_H
-#define OPENGL_FILEMANAGER_H
+#ifndef OPENGL_FILEMANAGEROLD_H
+#define OPENGL_FILEMANAGEROLD_H
 
 #include <fstream>
 #include <string>
-#include <spdlog/spdlog.h>
+#include "spdlog/spdlog.h"
 
 enum class SHADER_TYPE{
     FRAG,
@@ -17,6 +17,6 @@ std::string getShader(const SHADER_TYPE& type, const std::string& name = "defaul
 
 bool writeShader(const SHADER_TYPE& type, const std::string& name, const std::string& content);
 
-#endif //OPENGL_FILEMANAGER_H
+#endif //OPENGL_FILEMANAGEROLD_H
 
 

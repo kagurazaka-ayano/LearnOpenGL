@@ -1,4 +1,4 @@
-#include "fileManager.h"
+#include "managers/FileManagerOld.h"
 
 /**
  * Get the content of a shader file with certain type and name
@@ -6,7 +6,6 @@
  * @param name name of the shader, with no suffix
  * @return content of the shader file, in string, empty in failure
  * @remark fill in only the type of the shader to get the default shader of this type
- * @remark MEMORY MUST BE MANUALLY RECYCLED
  */
 std::string getShader(const SHADER_TYPE& type, const std::string& name){
     std::string ans, line, path = SHADER_ROOT + SHADER_TYPE_REF[static_cast<int>(type)] + "/" + name + "." + SHADER_TYPE_REF[static_cast<int>(type)];
@@ -16,7 +15,7 @@ std::string getShader(const SHADER_TYPE& type, const std::string& name){
             ans += line + '\n';
         }
         fileIn.close();
-        return ans.c_str();
+        return ans;
     }
     spdlog::warn("{0} shader \"{1}.{0}\" (inferred path: {2}) didn't load successfully", SHADER_TYPE_REF[static_cast<int>(type)], name, path);
     return "";
