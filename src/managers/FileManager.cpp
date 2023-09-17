@@ -45,7 +45,7 @@ bool FileManager::writeFileBin(const std::string &path, const char *content, con
     if(!ofs.is_open()) return false;
     ofs.write(content, size);
     ofs.close();
-    return false;
+    return true;
 }
 
 long long FileManager::sizeOf(const std::string &path) {
