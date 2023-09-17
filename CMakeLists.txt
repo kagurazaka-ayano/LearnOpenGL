@@ -12,10 +12,9 @@ file(GLOB TEST "src/test/*.cpp")
 
 add_executable(${PROJECT_NAME} ${SRC} ${MAIN} dependencies/glad/src/glad.c)
 
-include_directories(include/OpenGL)
+include_directories(include/OpenGL ${INCLUDE_DIR})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIR})
-target_link_directories(${PROJECT_NAME} PRIVATE ${LIB_DIR})
+link_directories(${LIB_DIR})
 
 target_link_libraries(${PROJECT_NAME} libglfw.3.dylib)
 

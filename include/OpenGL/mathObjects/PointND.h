@@ -33,11 +33,7 @@ public:
      */
     explicit PointND(const std::array<float, D>& coord);
 
-    /**
-     * @brief initialize a ND point with the given coord
-     * @param coord coordinate
-     */
-    PointND(const std::initializer_list<float>& li);
+    PointND(const std::initializer_list<float>& coord);
 
     /**
      * copy constructor
@@ -100,9 +96,102 @@ public:
     PointND<D> operator -(const PointND<D>& p) const;
 
     explicit operator std::string() const;
-
-    friend std::ostream& operator<<(std::ostream& os, const PointND<D>& p);
 };
+
+template<unsigned long D>
+void PointND<D>::transform(const std::array<float, D>& trans) {
+    for(int i = 0; i < D; i++){
+        coord[i] += trans[i];
+    }
+}
+
+template<unsigned long D>
+PointND<D>::PointND(PointND &&p) noexcept {
+    coord = std::move(p.coord);
+}
+
+template<unsigned long D>
+PointND<D>::PointND(const std::array<float, D>& li) {
+    if(li.size() != D) throw std::runtime_error(fmt::format("dimension unmatch! conflict between self dimension ({0}) and foreign dimension ({1})!", D, li.size()));
+    coord = li;
+}
+
+template<unsigned long D>
+unsigned long PointND<D>::dim() const {
+    return D;
+}
+
+template<unsigned long D>
+void PointND<D>::setPos(const std::array<float, D>& pos) {
+    coord = pos;
+}
+
+template<unsigned long D>
+void PointND<D>::setPos(const PointND<D>& point) {
+    coord = point.coord;
+}
+
+template<unsigned long D>
+PointND<D>::PointND(const PointND<D> &p) : coord(p.coord) {
+
+}
+
+template<unsigned long D>
+float PointND<D>::distBig(const PointND<D> &p) const {
+    float sum = 0;
+    auto p_coord = p.coord();
+    for (int i = 0; i < D; i++)
+        sum += (coord[i] - p_coord[i]) * (coord[i] - p_coord[i]);
+    return sqrt(sum);
+}
+
+template<unsigned long D>
+float PointND<D>::dist(const PointND<D> &p) const {
+    float sum = 0;
+    auto p_coord = p.coord;
+    for (int i = 0; i < D; i++)
+        sum += (coord[i] - p_coord[i]) * (coord[i] - p_coord[i]);
+    return sqrt(sum);
+}
+
+
+template<unsigned long D>
+PointND<D>::PointND(const std::initializer_list<float> &coord){
+    if(coord.size() != D) throw std::runtime_error(fmt::format("dimension unmatch! conflict between self dimension ({0}) and foreign dimension ({1})!", D, coord.size()));
+    int idx = 0;
+    for(auto i : coord){
+        this->coord[idx] = i;
+        idx++;
+    }
+}
+
+template<unsigned long D>
+PointND<D>::operator std::string() const {
+    std::string ans = static_cast<char>(D) + "D point at cart coord : (";
+    for(int i = 0; i < D; i++){
+        ans += static_cast<char>(coord[i]);
+    }
+    ans += ")";
+    return ans;
+}
+
+template<unsigned long D>
+PointND<D> PointND<D>::operator+(const PointND<D> &p) const {
+    PointND<D> result;
+    for (int i = 0; i < D; i++){
+        result.coord[i] = coord[i] + p.coord[i];
+    }
+    return result;
+}
+
+template<unsigned long D>
+PointND<D> PointND<D>::operator-(const PointND<D> &p) const {
+    PointND<D> result;
+    for (int i = 0; i < D; i++){
+        result.coord[i] = coord[i] - p.coord[i];
+    }
+    return result;
+}
 
 
 #endif //OPENGL_ndPoint_H
