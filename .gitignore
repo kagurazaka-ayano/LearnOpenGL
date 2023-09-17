@@ -1,5 +1,6 @@
 # clion
 cmake-build-debug
+cmake-build-debug-event-trace
 
 # macos
 .DS_Store

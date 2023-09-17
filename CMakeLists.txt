@@ -3,14 +3,23 @@ project(OpenGL)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(INCLUDE_DIR dependencies/glfw/include dependencies/glad/include dependencies/spdlog/include include/OpenGL)
+set(INCLUDE_DIR dependencies/glfw/include dependencies/glad/include dependencies/spdlog/include)
 set(LIB_DIR dependencies/glfw/lib dependencies/spdlog/lib)
 
-file(GLOB SRC "src/*.cpp" "src/3dObjects/*.cpp" "src/managers/*.cpp")
+file(GLOB SRC "src/mathObjects/*.cpp" "src/managers/*.cpp")
+file(GLOB MAIN "src/main/*.cpp")
+file(GLOB TEST "src/test/*.cpp")
 
-add_executable(${PROJECT_NAME} ${SRC} dependencies/glad/src/glad.c)
+add_executable(${PROJECT_NAME} ${SRC} ${MAIN} dependencies/glad/src/glad.c)
+
+include_directories(include/OpenGL)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIR})
 target_link_directories(${PROJECT_NAME} PRIVATE ${LIB_DIR})
 
 target_link_libraries(${PROJECT_NAME} libglfw.3.dylib)
+
+# for test
+add_executable(${PROJECT_NAME}_test ${SRC} ${TEST})
+
+

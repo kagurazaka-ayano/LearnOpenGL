@@ -11,7 +11,6 @@
 
 #include <string>
 #include <fstream>
-#include <spdlog/spdlog.h>
 #include <sys/stat.h>
 
 class FileManager {

@@ -3,6 +3,11 @@
 ## Math classes
 - [ ] vector classes
 - [ ] matrix classes
+- [x] general purpose point class
+
+## Physics system
+
+...
 
 ## Utility
 

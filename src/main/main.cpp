@@ -1,8 +1,8 @@
-#include <glad/glad.h>
-#include <glfw/glfw3.h>
+#include "glad/glad.h"
+#include "glfw/glfw3.h"
 #include <iostream>
-#include <3dObjects/Point3D.h>
-#include <managers/FileManagerOld.h>
+#include <mathObjects/Point3D.h>
+#include "managers/FileManagerOld.h"
 
 #define WIDTH 800
 #define HEIGHT 600

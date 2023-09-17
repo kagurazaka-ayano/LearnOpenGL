@@ -3,7 +3,7 @@
 
 #include <fstream>
 #include <string>
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 enum class SHADER_TYPE{
     FRAG,
