@@ -8,17 +8,6 @@
 
 #include <managers/FileManager.h>
 
-std::mutex FileManager::mutex;
-FileManager* FileManager::instance;
-
-FileManager *FileManager::Instance() {
-    std::lock_guard<std::mutex> lock(mutex);
-    if(instance == nullptr){
-        instance = new FileManager();
-    }
-    return instance;
-}
-
 std::string FileManager::readFileStr(const std::string &path) {
     auto ifs{std::ifstream(path)};
     std::string ans, line;
@@ -39,6 +28,7 @@ char *FileManager::readFileBin(const std::string &path) {
     auto ifs = std::ifstream(path, std::ifstream::binary);
     char* ans = new char[size];
     ifs.read(ans, size);
+    ifs.close();
     return ans;
 }
 
@@ -46,6 +36,7 @@ bool FileManager::writeFileStr(const std::string &path, const std::string &conte
     auto ofs = std::ofstream(path);
     if(!ofs.is_open()) return false;
     ofs << content;
+    ofs.close();
     return true;
 }
 
@@ -53,6 +44,7 @@ bool FileManager::writeFileBin(const std::string &path, const char *content, con
     auto ofs = std::ofstream(path, std::ofstream::binary);
     if(!ofs.is_open()) return false;
     ofs.write(content, size);
+    ofs.close();
     return false;
 }
 
