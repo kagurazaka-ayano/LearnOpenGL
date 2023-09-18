@@ -10,15 +10,24 @@ file(GLOB SRC "src/mathObjects/*.cpp" "src/managers/*.cpp")
 file(GLOB MAIN "src/main/*.cpp")
 file(GLOB TEST "src/test/*.cpp")
 
+
+
 add_executable(${PROJECT_NAME} ${SRC} ${MAIN} dependencies/glad/src/glad.c)
 
-include_directories(include/OpenGL ${INCLUDE_DIR})
+add_executable(${PROJECT_NAME}_test ${SRC} ${TEST} dependencies/glad/src/glad.c)
 
-link_directories(${LIB_DIR})
+target_link_directories(${PROJECT_NAME} PRIVATE ${LIB_DIR})
 
-target_link_libraries(${PROJECT_NAME} libglfw.3.dylib)
+target_link_libraries(${PROJECT_NAME} PRIVATE libglfw.3.dylib)
 
-# for test
-add_executable(${PROJECT_NAME}_test ${SRC} ${TEST})
+target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIR} include/OpenGL)
+
+target_link_directories(${PROJECT_NAME}_test PRIVATE ${LIB_DIR})
+
+target_link_libraries(${PROJECT_NAME}_test PRIVATE libglfw.3.dylib)
+
+target_include_directories(${PROJECT_NAME}_test PRIVATE ${INCLUDE_DIR} include/OpenGL)
+
+
 
 

@@ -7,10 +7,11 @@
 */
 
 #include <mathObjects/PointND.h>
-#include <managers/FileManager.h>
+#include <managers/ShaderManager.h>
 #include <iostream>
 
 int main(){
-    FileManager::writeFileStr("../src/shaders/frag/default.frag", "test");
+    auto manager = ShaderManager::Instance();
+    std::cout<<manager->generateFragmentObject();
     return 0;
 }

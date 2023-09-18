@@ -37,3 +37,7 @@ cmake-build-debug-event-trace
 *.exe
 *.out
 *.app
+
+# Fun idea plugins
+.idea/discord.xml
+

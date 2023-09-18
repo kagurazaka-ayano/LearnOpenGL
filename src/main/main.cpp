@@ -1,8 +1,10 @@
-#include "glad/glad.h"
-#include "glfw/glfw3.h"
+#include <glad/glad.h>
+#include <glfw/glfw3.h>
 #include <iostream>
 #include <mathObjects/Point3D.h>
-#include "managers/FileManagerOld.h"
+#include <managers/ShaderManager.h>
+
+#include <spdlog/spdlog.h>
 
 #define WIDTH 800
 #define HEIGHT 600
@@ -54,42 +56,17 @@ int main()
     int success;
     char errorLog[512];
 
+    auto manager = ShaderManager::Instance();
+
     // make vert shader content and compile
-    auto vert_shader_content = getShader(SHADER_TYPE::VERT);
-    const char* cstr = vert_shader_content.c_str();
-    unsigned int vertShader{glCreateShader(GL_VERTEX_SHADER)};
-    glShaderSource(vertShader, 1, &cstr, nullptr);
-    glCompileShader(vertShader);
-    glGetShaderiv(vertShader, GL_COMPILE_STATUS, &success);
-    if(!success){
-        spdlog::info(vert_shader_content);
-        glGetShaderInfoLog(vertShader, 512, nullptr, errorLog);
-        spdlog::error("vertex shader compile failed, message: {0}", errorLog);
-    }
+    auto vertShader = manager->generateVertexObject();
+
 
     // make frag shader content and compile
-    auto frag_shader_content = getShader(SHADER_TYPE::FRAG);
-    cstr = frag_shader_content.c_str();
-    unsigned int fragShader{glCreateShader(GL_FRAGMENT_SHADER)};
-    glShaderSource(fragShader, 1, &cstr, nullptr);
-    glCompileShader(fragShader);
-    glGetShaderiv(fragShader, GL_COMPILE_STATUS, &success);
-    if(!success){
-        spdlog::info(frag_shader_content);
-        glGetShaderInfoLog(fragShader, 512, nullptr, errorLog);
-        spdlog::error("fragment shader compile failed, message: {0}", errorLog);
-    }
+    auto fragShader = manager->generateFragmentObject();
 
     // make shader program
-    unsigned int shaderProgram{glCreateProgram()};
-    glAttachShader(shaderProgram, vertShader);
-    glAttachShader(shaderProgram, fragShader);
-    glLinkProgram(shaderProgram);
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if(!success){
-        glGetProgramInfoLog(shaderProgram, 512, nullptr, errorLog);
-        spdlog::error("shader program link failed, message: {0}", errorLog);
-    }
+    unsigned int shaderProgram = manager->generateShaderProgram<2>("main", {vertShader, fragShader});
     glUseProgram(shaderProgram);
 
     // delete the shaders
