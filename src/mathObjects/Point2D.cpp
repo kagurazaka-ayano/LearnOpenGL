@@ -9,7 +9,7 @@
 #include "mathObjects/Point2D.h"
 
 Point2D::Point2D(const float &x, const float &y) : x(x), y(y) {
-
+    coord = std::array<float, 2>{x, y};
 }
 
 Point2D::Point2D(const std::array<float, 2> &set) : PointND(set), x(set[0]), y(set[1]) {
