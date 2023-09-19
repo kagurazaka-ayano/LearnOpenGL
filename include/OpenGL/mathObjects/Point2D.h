@@ -18,6 +18,8 @@ public:
     explicit Point2D(const std::array<float, 2>& set);
 
     Point2D(const float& x, const float& y);
+
+    Point2D(const std::initializer_list<float>& set);
 };
 
 

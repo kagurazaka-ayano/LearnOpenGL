@@ -7,11 +7,15 @@
 #include <spdlog/spdlog.h>
 
 #define WIDTH 800
-#define HEIGHT 600
+#define HEIGHT 800
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 void processInput(GLFWwindow *window);
+
+void swapFrameMode();
+
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 int main()
 {
@@ -33,87 +37,108 @@ int main()
     }
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
-    Point3D pointSet[] = {
-            Point3D{-0.5f, -0.5f, 0.0},
-            Point3D{0.5f, -0.5f, 0.0},
-            Point3D{0.0f, 0.5f, 0.0}
+    auto manager = ShaderManager::Instance();
+
+    auto vertShader = manager->generateVertexObject();
+    auto defaultFragShader = manager->generateFragmentObject();
+    auto blueFragShader = manager->generateFragmentObject("lightSlateBlue");
+    auto normalShaderProgram = manager->generateShaderProgram<2>("normal", {vertShader, defaultFragShader});
+    auto blueShaderProgram = manager->generateShaderProgram<2>("blue", {vertShader, blueFragShader});
+    // delete the shaders
+    glDeleteShader(vertShader);
+    glDeleteShader(defaultFragShader);
+    glDeleteShader(blueFragShader);
+
+
+    std::array<Point3D, 4> vertex_pool{
+        Point3D{-0.5, -0.5, 0},
+        Point3D{-0.5, 0.5, 0},
+        Point3D{0.5, 0.5, 0},
+        Point3D{0.5, -0.5, 0}
     };
-    float vertices[9];
+    
     int idx = 0;
-    for (const auto& i : pointSet){
+    float vertices[vertex_pool.size() * sizeof(float) * 3];
+    for (const auto& i : vertex_pool){
         vertices[idx * 3] = i.x;
         vertices[idx * 3 + 1] = i.y;
         vertices[idx * 3 + 2] = i.z;
         idx++;
     }
 
-    // generate VBO
+    unsigned int indices[] {
+        0, 1, 3,
+        1, 2, 3
+    };
+    
+    unsigned int VAO;
     unsigned int VBO;
+    unsigned int EBO;
+
+    glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    int success;
-    char errorLog[512];
-
-    auto manager = ShaderManager::Instance();
-
-    // make vert shader content and compile
-    auto vertShader = manager->generateVertexObject();
-
-
-    // make frag shader content and compile
-    auto fragShader = manager->generateFragmentObject();
-
-    // make shader program
-    unsigned int shaderProgram = manager->generateShaderProgram<2>("main", {vertShader, fragShader});
-    glUseProgram(shaderProgram);
-
-    // delete the shaders
-    glDeleteShader(vertShader);
-    glDeleteShader(fragShader);
-
-    // make and bind VAO
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    // tell gpu how to interpret the data:
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, nullptr);
     glEnableVertexAttribArray(0);
 
+    // key callback
+    glfwSetKeyCallback(window, keyCallback);
+
+    GLint polyMode[2];
 
     // render loop
     while(!glfwWindowShouldClose(window)){
         // input
         processInput(window);
 
-        // rendering
-//        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-//        glClear(GL_COLOR_BUFFER_BIT);
+        // clear color and depth buffer when is in wireframe mode
+        if (polyMode[0] != GL_FILL) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // draw triangle
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glUseProgram(normalShaderProgram);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+
+        glUseProgram(blueShaderProgram);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
         // call events and swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
     glfwTerminate();
-
-
     return 0;
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height){
     glViewport(-1, 1, width, height);
-    std::cout<<"framebufferSizeCallback called! "<<width<<" "<<height<<std::endl;
+    spdlog::info("framebufferSizeCallback called! ({0}, {1})", width, height);
 }
 
 void processInput(GLFWwindow *window){
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
         glfwSetWindowShouldClose(window, true);
     }
+}
+
+void swapFrameMode(){
+    GLint polyMode[2];
+    glGetIntegerv(GL_POLYGON_MODE, polyMode);
+    if (polyMode[0] == GL_FILL) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_Q && action == GLFW_PRESS) swapFrameMode();
 }

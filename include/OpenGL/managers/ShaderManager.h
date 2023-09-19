@@ -142,12 +142,10 @@ unsigned int ShaderManager::generateShaderProgram(const std::string &name, const
     checkGLState();
     unsigned int program = glCreateProgram();
     for(unsigned int i : shaders) {
-        spdlog::info(i);
         glAttachShader(program, i);
     }
     glLinkProgram(program);
     std::string error = checkLinkSuccessful(program);
-    spdlog::info(error);
     if (error == "OK") {
         cacheAdd(name, SHADER_TYPE::PROGRAM, Shader("", program));
         return program;

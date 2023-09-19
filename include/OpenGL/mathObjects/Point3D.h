@@ -14,6 +14,8 @@ public:
 
     Point3D(const float& x, const float& y, const float& z);
 
+    Point3D(const std::initializer_list<float>& set);
+
 };
 
 
