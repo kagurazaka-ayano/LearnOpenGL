@@ -31,8 +31,12 @@ public:
      * @brief initialize a ND point with the given coord
      * @param coord coordinate
      */
-    explicit PointND(const std::array<float, D>& coord);
+    explicit PointND(const std::array<float, D>& li);
 
+    /**
+     * @brief initializer_list version
+     * @param coord coordinate
+     */
     PointND(const std::initializer_list<float>& coord);
 
     /**
@@ -95,8 +99,16 @@ public:
 
     PointND<D> operator -(const PointND<D>& p) const;
 
+    PointND<D>& operator =(const PointND<D>& other);
+
     explicit operator std::string() const;
 };
+
+template<unsigned long D>
+PointND<D>& PointND<D>::operator=(const PointND<D> &other) {
+    coord = other.coord;
+    return *this;
+}
 
 template<unsigned long D>
 void PointND<D>::transform(const std::array<float, D>& trans) {

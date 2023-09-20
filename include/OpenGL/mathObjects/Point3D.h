@@ -6,7 +6,7 @@
 #include <sstream>
 #include <mathObjects/PointND.h>
 
-class Point3D : PointND<3> {
+class Point3D : public PointND<3> {
 public:
     float x, y, z;
 

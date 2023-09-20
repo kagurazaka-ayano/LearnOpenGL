@@ -11,7 +11,7 @@
 
 #include <mathObjects/PointND.h>
 
-class Point2D : PointND<2> {
+class Point2D : public PointND<2> {
 public:
     float x, y;
 
