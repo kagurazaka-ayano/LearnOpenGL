@@ -1,5 +1,5 @@
 /*
- * @parent: src/mathObjects
+ * @parent: include/OpenGL/mathObjects
  * @file: Point2D.h
  * @author: ayano
  * @date: 9/18/23

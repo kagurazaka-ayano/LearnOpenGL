@@ -4,6 +4,7 @@
 #include <managers/ShaderManager.h>
 #include <glObjects/Vertex.h>
 #include <glObjects/VertexArray.h>
+#include <glObjects/Shader.h>
 
 #include <spdlog/spdlog.h>
 
@@ -40,19 +41,18 @@ int main()
 
     auto manager = ShaderManager::Instance();
 
-    auto vertShader = manager->generateVertexObject();
-    auto defaultFragShader = manager->generateFragmentObject();
-    auto normalShaderProgram = manager->generateShaderProgram<2>("normal", {vertShader, defaultFragShader});
+    auto vertShader = manager->getShaderObject<VertShader>();
+    auto defaultFragShader = manager->getShaderObject<FragShader>();
+    auto normalShaderProgram = manager->getShaderProgram<2>("name", {vertShader, defaultFragShader});
+
+    VertexArray arr = VertexArray<3>({
+            Vertex(Point3D{0.5f, -0.5f, 0.0f}, Color(1.0f, 0.0f, 0.0f, 1.0f)),
+            Vertex(Point3D{-0.5f, -0.5f, 0.0f}, Color(0.0f, 1.0f, 0.0f, 1.0f)),
+            Vertex(Point3D{0.0f, 0.5f, 0.0f}, Color(0.0f, 0.0f, 1.0f, 1.0f))
+    });
 
 
-    VertexArray arr = VertexArray<3>{
-        Vertex{0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f},
-        Vertex{-0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f},
-        Vertex{0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f}
-    };
 
-    spdlog::info(sizeof(arr.data));
-    
     unsigned int VAO;
     unsigned int VBO;
 
@@ -64,17 +64,19 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(arr.data), arr.data, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * , (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    glUseProgram(normalShaderProgram);
+    normalShaderProgram->use();
 
     // key callback
     glfwSetKeyCallback(window, keyCallback);
 
     float timeOffset = 0.3;
+
+    normalShaderProgram->use();
 
     // render loop
     while(!glfwWindowShouldClose(window)){
@@ -86,7 +88,6 @@ int main()
 
         glBindBuffer(GL_ARRAY_BUFFER, VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-
         // call events and swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();

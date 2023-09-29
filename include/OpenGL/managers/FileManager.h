@@ -26,7 +26,7 @@ public:
      * @brief read binary data from given file
      * @param path file path
      * @return content of the file, in byte array
-     * @remark you need to manage the memory manually since this method creates a heap object
+     * @remark you need to manage the memory manually since this method creates a heap ID
      */
     static char* readFileBin(const std::string& path);
 

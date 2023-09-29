@@ -41,3 +41,7 @@ cmake-build-debug-event-trace
 # Fun plugins
 .idea/discord.xml
 .idea/statistic.xml
+
+# vscode
+.vscode
+build

@@ -6,12 +6,15 @@
  * 
 */
 
-#include <mathObjects/PointND.h>
-#include <managers/ShaderManager.h>
+#include <mathObjects/Color.h>
+#include <unordered_map>
 #include <iostream>
+#include <typeindex>
+
 
 int main(){
-    auto manager = ShaderManager::Instance();
-    std::cout<<manager->generateFragmentObject();
+    auto pt = PointND<3>{1, 1, 34};
+    std::cout << static_cast<std::string>(pt);
+
     return 0;
 }

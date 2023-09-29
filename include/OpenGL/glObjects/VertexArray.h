@@ -8,19 +8,19 @@
 
 #ifndef OPENGL_VERTEXARRAY_H
 #define OPENGL_VERTEXARRAY_H
-
 #include <vector>
 #include <glObjects/Vertex.h>
-#include <cassert>
+#include "utilities/utilities.h"
 
 template<std::size_t N>
 struct VertexArray{
-    std::vector<Vertex> vertices;
-    float data[N * 6]{};
-    VertexArray(const std::initializer_list<Vertex>& vertex) : vertices(vertex) {
-        assert(vertex.size() == N);
-        for (int i = 0; i < 6 * vertex.size(); i++){
-            data[i] = (vertex.begin() + (i / 6))->data[i % 6];
+    std::array<Vertex, N> vertices;
+    float data[N * 7]{};
+    VertexArray(const std::initializer_list<Vertex>& vertex){
+        runtimeAssert(vertex.size() == N, fmt::format("Dimension provided in template argument ({0}) doesn't match the given array dimension ({1})", N, vertex.size()));
+        std::copy(vertex.begin(), vertex.end(), vertices.begin());
+        for (int i = 0; i < 7 * vertex.size(); i++){
+            data[i] = (vertex.begin() + (i / 7))->data[i % 7];
         }
     }
 };
