@@ -12,6 +12,7 @@
 #include <string>
 #include <fstream>
 #include <sys/stat.h>
+#include <stb_image.h>
 
 class FileManager {
 public:
@@ -41,7 +42,7 @@ public:
     static bool writeFileStr(const std::string& path, const std::string& content);
 
     /**
-     * @brief write the the give contest to the given binary file
+     * @brief write the the give content to the given binary file
      * @param path file path
      * @param content file content to write into file
      * @remark this will override the original file content
@@ -55,6 +56,12 @@ public:
      * @return size of the file
      */
     static long long sizeOf(const std::string& path);
+
+    FileManager(const FileManager&) = delete;
+    FileManager& operator=(const FileManager&) = delete;
+
+private:
+    FileManager() = default;
 };
 
 
