@@ -89,6 +89,8 @@ class Color : public PointND<4>{
 public:
     float rh, gs, bvl, a;
 
+    float data[4]{0};
+
     Color(const float& x, const float& y, const float& z, const float& a, IColorSpace* space);
 
     Color(const float& x, const float& y, const float& z, IColorSpace* space);

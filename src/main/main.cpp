@@ -5,6 +5,7 @@
 #include <glObjects/Vertex.h>
 #include <glObjects/VertexArray.h>
 #include <glObjects/Shader.h>
+#include <glObjects/TextureMapping.h>
 
 #include <spdlog/spdlog.h>
 
@@ -51,20 +52,14 @@ int main()
             Vertex(Point3D{0.0f, 0.5f, 0.0f}, Color(0.0f, 0.0f, 1.0f, 1.0f))
     });
 
-
-
     unsigned int VAO;
     unsigned int VBO;
-
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-
     glBindVertexArray(VAO);
-
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(arr.data), arr.data, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * , (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (void*)0);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
@@ -74,10 +69,27 @@ int main()
     // key callback
     glfwSetKeyCallback(window, keyCallback);
 
-    float timeOffset = 0.3;
+    // texture
+
+    auto textureMapping = TextureMapping({
+                                                           Point2D(0.f, 0.f),
+                                                           Point2D(1.f, 0.f),
+                                                           Point2D(0.5f, 1.f)
+                                                   });
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+    Color boarderColor = Color::WHITE;
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, boarderColor.data);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
 
     normalShaderProgram->use();
-
     // render loop
     while(!glfwWindowShouldClose(window)){
         // input

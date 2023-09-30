@@ -13,6 +13,10 @@ Color::Color(const float &x, const float &y, const float &z, const float &a, ICo
     this->gs = y;
     this->bvl = z;
     this->a = a;
+    this->data[0] = rh;
+    this->data[1] = gs;
+    this->data[2] = bvl;
+    this->data[3] = a;
     this->space = space;
 }
 
