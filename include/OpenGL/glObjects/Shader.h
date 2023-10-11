@@ -1,5 +1,5 @@
-/*
- * @parent: src/glObjects
+/**
+ * @parent: include/OpenGL/glObjects
  * @file: Shader.h
  * @author: ayano
  * @date: 9/20/23
@@ -14,33 +14,22 @@
 #include <typeindex>
 #include <typeinfo>
 #include <variant>
-#include <glad/glad.h>
 
-#include <spdlog/spdlog.h>
-#include <mathObjects/PointND.h>
-#include <utilities/mathFunctions.hpp>
+#include "glad/glad.h"
+#include "spdlog/spdlog.h"
+#include "mathObjects/PointND.h"
+#include "utilities/mathFunctions.hpp"
+#include "utilities/PoolAbstract.h"
 
 /**
- * a shader class for internal use, will later implement reference counter
+ * @brief base shader class, with its life cycle being managed by ShaderManager
  */
-
-class BaseShader{
+class BaseShader : public IPoolable{
 public:
-    const std::string name;
-    const unsigned int ID;
-
-    /**
-     * @brief dispose the shader
-     * @remark it will make its ref counter -1, and trigger manual gc if the ref counter == 0
-     */
-    void dispose();
-
     virtual ~BaseShader();
 
 protected:
-    unsigned int refCount = 0;
-
-    BaseShader(std::string name, unsigned int ID);
+    BaseShader(const std::string& name, unsigned int ID);
 };
 
 class FragShader : public BaseShader{
@@ -60,12 +49,12 @@ public:
 
 class ShaderProgram : public BaseShader {
 public:
-    ShaderProgram(const unsigned int &object, const std::string &name);
-
     /**
-     * use this program, and increment the ref counter by 1
+     * use the program
      */
-    void use();
+    void use() const;
+
+    ShaderProgram(const unsigned int &object, const std::string &name);
 
     /**
      * @brief generic way of setting a uniform value that belongs to standard types(int, float, bool)
@@ -76,11 +65,16 @@ public:
     template<typename T>
     void setUniformValue(const std::string &varName, T val) const;
 
+    /**
+     * @brief generic way of setting a uniform value that is a vector
+     * @tparam C dimension of the vector, must be between 1 and 4
+     * @param varName variable name
+     * @param value value of the variable
+     */
     template<std::size_t C>
     void setVectorValue(const std::string &varName, const PointND<C> &value) const;
 
 private:
-    void useNoIncrement() const;
 
     template<typename T>
     constexpr void checkValidType() const;

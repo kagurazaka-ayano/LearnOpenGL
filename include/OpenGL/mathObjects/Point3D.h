@@ -1,8 +1,8 @@
-/*
- * @parent: include/OpenGL/mathObjects
- * @file: Point3D.h
- * @author: ayano
- * @date: 9/15/23
+/**
+ * @parent include/OpenGL/mathObjects
+ * @file Point3D.h
+ * @author ayano
+ * @date 9/15/23
  *
 */
 
@@ -12,7 +12,7 @@
 #include <string>
 #include <cmath>
 #include <sstream>
-#include <mathObjects/PointND.h>
+#include "mathObjects/PointND.h"
 
 class Point3D : public PointND<3> {
 public:

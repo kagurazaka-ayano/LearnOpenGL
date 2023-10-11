@@ -62,7 +62,7 @@ Color::Color(const Color &other) : Color(other.rh, other.gs, other.bvl, other.a,
 
 }
 
-Color::Color(Color &&other) noexcept : PointND<4>(std::move(other)), rh(other.rh), gs(other.gs), bvl(other.bvl), a(other.a), space(other.space){
+Color::Color(Color &&other) noexcept : rh(other.rh), gs(other.gs), bvl(other.bvl), a(other.a), space(other.space), PointND<4>(std::move(other)){
 
 }
 
@@ -150,8 +150,8 @@ bool ColorSpaceRGB::checkData(const std::array<float, 4> &color, bool throwExp) 
 }
 
 std::array<float, 4> ColorSpaceHSV::convertTo(const std::array<float, 4> &color, IColorSpace* dest) const {
-    float h = color[0], s = color[1], v = color[2], a = color[3];
     checkData(color);
+    float h = color[0], s = color[1], v = color[2], a = color[3];
     if (dest == ColorSpaceHSV::Instance()) {
         return color;
     }
@@ -210,8 +210,8 @@ bool ColorSpaceHSV::checkData(const std::array<float, 4> &color, bool throwExp) 
 }
 
 std::array<float, 4> ColorSpaceHSL::convertTo(const std::array<float, 4> &color, IColorSpace* dest) const {
-    float h = color[0], s = color[1], l = color[2], a = color[3];
     checkData(color);
+    float h = color[0], s = color[1], l = color[2], a = color[3];
     if (dest == ColorSpaceHSL::Instance()){
         return color;
     }
@@ -255,8 +255,8 @@ bool ColorSpaceHSL::checkData(const std::array<float, 4> &color, bool throwExp) 
     if (!throwExp) {
         return exp == -1;
     }
-    if (exp == -1) return true;
-    throw std::runtime_error(messages[exp]);
+    runtimeAssert(exp == -1, messages[exp]);
+    return true;
 }
 
 std::array<float, 4> IColorSpace::convertFrom(const std::array<float, 4> &color, IColorSpace *from) {
@@ -272,8 +272,8 @@ IColorSpace * Color::getSpace() const {
 }
 
 std::array<float, 4> Color::checkValue(const std::array<float, 4> &color, IColorSpace *spaceIn) {
-    if(spaceIn->checkData(color))
-        return color;
+    spaceIn->checkData(color);
+    return color;
 }
 
 Color& Color::operator=(Color&& other) noexcept{
@@ -297,6 +297,10 @@ Color& Color::operator=(const Color& other){
         PointND<4>::operator=(other);
     }
     return *this;
+}
+
+void Color::convertColorSpace(IColorSpace *newSpace) {
+    this->space = newSpace;
 }
 
 

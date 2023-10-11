@@ -1,16 +1,17 @@
-/*
- * @parent: src/glObjects
- * @file: Vertex.h
- * @author: ayano
- * @date: 9/20/23
- * 
+/**
+ * @parent include/OpenGL/glObjects
+ * @file Vertex.h
+ * @author ayano
+ * @date 9/20/23
+ * @brief one single vertex struct, has position and color parameter
 */
 
 #ifndef OPENGL_VERTEX_H
 #define OPENGL_VERTEX_H
-#include <mathObjects/Point3D.h>
+
+#include "mathObjects/Point3D.h"
 #include "utilities/utilities.h"
-#include <mathObjects/Color.h>
+#include "mathObjects/Color.h"
 
 struct Vertex{
     Point3D position;

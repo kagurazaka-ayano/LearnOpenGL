@@ -25,15 +25,11 @@ ShaderProgram::ShaderProgram(const unsigned int &object, const std::string& name
 
 }
 
-void ShaderProgram::use() {
-    refCount++;
-    glUseProgram(ID);
-
-}
-
-void ShaderProgram::useNoIncrement() const {
+void ShaderProgram::use() const{
+    checkGLState();
     glUseProgram(ID);
 }
+
 
 template<std::size_t C>
 void ShaderProgram::setVectorValue(const std::string &varName, const PointND<C> &value) const {
@@ -42,7 +38,6 @@ void ShaderProgram::setVectorValue(const std::string &varName, const PointND<C> 
     if (loc == -1) spdlog::error("invalid uniform variable name {0}, not found in any of the shaders belong to the shader program {1}", varName, name);
     else {
         VEC_FUNC_REF[C - 1](loc, 1, value.coord.data());
-        ShaderProgram::useNoIncrement();
     }
 }
 
@@ -57,17 +52,13 @@ void ShaderProgram::setUniformValue(const std::string &varName, T val) const {
     int loc = glGetUniformLocation(ID, varName.c_str());
     if (loc == -1) spdlog::error("invalid uniform variable name {0}, not found in any of the shaders belong to the shader program {1}", varName, name);
     else {
-
         glUniform1i(loc, val);
+        use();
     }
 }
 
-BaseShader::BaseShader(std::string  name, unsigned int ID) : name(std::move(name)), ID(ID) {
+BaseShader::BaseShader(const std::string& name, unsigned int ID) : IPoolable(ID, name) {
 
-}
-
-void BaseShader::dispose() {
-    refCount--;
 }
 
 BaseShader::~BaseShader() = default;

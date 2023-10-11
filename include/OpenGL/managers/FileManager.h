@@ -1,9 +1,9 @@
-/*
- * @parent: src/managers
- * @file: FileManager.h
- * @author: ayano
- * @date: 9/15/23
- * 
+/**
+ * @parent include/OpenGL/managers
+ * @file FileManager.h
+ * @author ayano
+ * @date 9/15/23
+ * @brief file manager, provided a static FileManager class as file manipulation interface
 */
 
 #ifndef OPENGL_FILEMANAGER_H
@@ -12,7 +12,7 @@
 #include <string>
 #include <fstream>
 #include <sys/stat.h>
-#include <stb_image.h>
+
 
 class FileManager {
 public:
@@ -30,6 +30,22 @@ public:
      * @remark you need to manage the memory manually since this method creates a heap ID
      */
     static char* readFileBin(const std::string& path);
+
+    /**
+     * @brief get image as byte array
+     * @param path image path
+     * @param width image width
+     * @param height image height
+     * @param channelCount image channel count
+     * @return byte array of the byte array returned
+     */
+    static unsigned char * getImage(const std::string& path, int width, int height, int channelCount);
+
+    /**
+     * @brief free the image from memory
+     * @param image image object you get from getImage
+     */
+    static void freeImage(unsigned char* image);
 
     /**
      * @brief write the given content to the given string file

@@ -1,18 +1,18 @@
-/*
- * @parent: include/OpenGL/mathObjects
- * @file: Color.h
- * @author: ayano
- * @date: 9/24/23
- * generic color class
+/**
+ * @parent include/OpenGL/mathObjects
+ * @file Color.h
+ * @author ayano
+ * @date 9/24/23
+ * @brief generic color class
 */
 
 #ifndef OPENGL_COLOR_H
 #define OPENGL_COLOR_H
 
-#include <mathObjects/PointND.h>
-#include <utilities/utilities.h>
-#include <utilities/SingletonAbstract.hpp>
-#include <utilities/mathFunctions.hpp>
+#include "mathObjects/PointND.h"
+#include "utilities/utilities.h"
+#include "utilities/SingletonAbstract.hpp"
+#include "utilities/mathFunctions.hpp"
 #include <typeinfo>
 #include <typeindex>
 #include <string>
@@ -132,7 +132,7 @@ public:
      * @remark tostring
      * @return hexadecimal representation (including alpha value) of this color
      */
-    explicit operator std::string() const;
+    explicit operator std::string() const override;
 
     Color& operator=(Color&& other) noexcept;
 

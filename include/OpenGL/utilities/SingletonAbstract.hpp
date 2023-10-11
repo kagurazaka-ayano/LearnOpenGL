@@ -1,11 +1,8 @@
-/*
- * @parent: include/OpenGL/utilities
- * @file: SingletonAbstract.hpp
- * @author: ayano
- * @date: 9/24/23
- *
- *
- *
+/**
+ * @parent include/OpenGL/utilities
+ * @file SingletonAbstract.hpp
+ * @author ayano
+ * @date 9/24/23
  *
 */
 

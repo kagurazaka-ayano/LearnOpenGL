@@ -6,12 +6,13 @@
  * 
 */
 
-#include <managers/FileManager.h>
+#include "managers/FileManager.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 std::string FileManager::readFileStr(const std::string &path) {
     auto ifs{std::ifstream(path)};
     std::string ans, line;
-
     if(ifs.is_open()){
         while(getline(ifs, line)){
             ans += line + '\n';
@@ -54,6 +55,13 @@ long long FileManager::sizeOf(const std::string &path) {
     return -1;
 }
 
+unsigned char *FileManager::getImage(const std::string &path, int width, int height, int channelCount) {
+    return stbi_load(path.data(), &width, &height, &channelCount, 0);
+}
+
+void FileManager::freeImage(unsigned char* image) {
+    stbi_image_free((void*)image);
+}
 
 
 

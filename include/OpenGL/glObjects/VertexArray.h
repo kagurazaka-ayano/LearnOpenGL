@@ -1,15 +1,15 @@
-/*
- * @parent: src/glObjects
- * @file: VertexArray.h
- * @author: ayano
- * @date: 9/20/23
- * 
+/**
+ * @parent include/OpenGL/glObjects
+ * @file VertexArray.h
+ * @author ayano
+ * @date 9/20/23
+ * @brief vertex array
 */
 
 #ifndef OPENGL_VERTEXARRAY_H
 #define OPENGL_VERTEXARRAY_H
 #include <vector>
-#include <glObjects/Vertex.h>
+#include "glObjects/Vertex.h"
 #include "utilities/utilities.h"
 
 template<std::size_t N>

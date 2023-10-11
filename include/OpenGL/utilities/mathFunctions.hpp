@@ -1,4 +1,4 @@
-/*
+/**
  * @parent: include/OpenGL/utilities
  * @file: mathFunctions.h
  * @author: ayano

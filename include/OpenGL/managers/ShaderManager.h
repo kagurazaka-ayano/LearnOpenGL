@@ -1,8 +1,8 @@
-/*
- * @parent: src/managers
- * @file: ShaderManager.h
- * @author: ayano
- * @date: 9/17/23
+/**
+ * @parent include/OpenGL/managers
+ * @file ShaderManager.h
+ * @author ayano
+ * @date 9/17/23
  * 
 */
 
@@ -15,86 +15,27 @@
 #include <memory>
 #include <array>
 
-#include <managers/FileManager.h>
-#include <glObjects/Shader.h>
-#include <spdlog/spdlog.h>
-#include <glad/glad.h>
-#include <utilities/utilities.h>
-#include <utilities/SingletonAbstract.hpp>
+#include "managers/FileManager.h"
+#include "glObjects/Shader.h"
+#include "spdlog/spdlog.h"
+#include "glad/glad.h"
+#include "utilities/utilities.h"
+#include "utilities/SingletonAbstract.hpp"
+#include "utilities/PoolAbstract.h"
 
 
-class ShaderManager : public SingletonAbstract<ShaderManager>{
+class ShaderManager : public SingletonAbstract<ShaderManager>, public PoolAbstract<BaseShader>{
     friend class SingletonAbstract<ShaderManager>;
 
     ShaderManager() = default;
-
-    static ShaderManager* instance;
-    static std::mutex mutex;
 
     /**
      * predefined shader type reference, also the directory name
      * @remark the "program" parameter is reserved for shader program and must be the last element
      */
-    const std::unordered_map<std::type_index, std::string> SHADER_TYPE_REF{
-            {typeid(FragShader), "frag"},
-            {typeid(VertShader), "vert"},
-            {typeid(GeomShader), "geom"},
-            {typeid(ShaderProgram), "program"}
-    };
-    const std::string SHADER_ROOT = "../src/shaders/";
-    const std::unordered_map<std::type_index, int> SHADER_GL_ENUM = {
-            {typeid(FragShader), GL_FRAGMENT_SHADER},
-            {typeid(VertShader), GL_VERTEX_SHADER},
-            {typeid(GeomShader), GL_GEOMETRY_SHADER},
-            {typeid(ShaderProgram), -1}
-    };
-
-    /**
-     * shader cache
-     */
-    std::unordered_map<std::string, BaseShader*> cacheName;
-
-    /**
-     * cache based on ID of shader, values are the name of the shader
-     */
-    std::unordered_map<unsigned int, std::string> cacheID;
-
-    /**
-     * @brief add the shader to the cache
-     * @param name shader name in the file system, relative path to the root shader directory
-     * @param shader shader ID
-     */
-    template<typename T>
-    void cacheAdd(const std::string& name, BaseShader* shader);
-
-    /**
-     * @brief remove the entry from the cache
-     * @param name shader name in the file system, relative path to the root shader directory
-     */
-    template<typename T>
-    void cachePop(const std::string& name);
-
-    /**
-     * remove entry from cache based on shader ID
-     * @param shaderID shader ID
-     */
-    void cachePop(const unsigned int& shaderID);
-
-    /**
-     * @brief fetch shader with given name from cache
-     * @param name shader name in the file system
-     * @return the shader ID found, nullptr otherwise
-     */
-    template<typename T>
-    T* cacheFind(const std::string& name);
-
-    /**
-     * fetch shader with given shader id
-     * @param shaderID shader id
-     * @return the shader ID
-     */
-    template<typename T>
-    T* cacheFind(const unsigned int& shaderID);
+    static const std::unordered_map<std::type_index, std::string> SHADER_TYPE_REF;
+    static const std::string SHADER_ROOT;
+    static const std::unordered_map<std::type_index, int> SHADER_GL_ENUM;
 
     /**
      * check weather the shader complication is successful
@@ -110,10 +51,9 @@ class ShaderManager : public SingletonAbstract<ShaderManager>{
      */
     static std::string checkLinkSuccessful(const unsigned int& program);
 
-    /**
-     * @brief check whether GLAD is included
-     */
-    static void checkGLState();
+    template<typename T>
+    static std::string getShaderName(const std::string& name);
+
 
     template<typename T>
     static void isShader();
@@ -151,7 +91,7 @@ public:
      * @return constructed shader object
      * @remark if the shader is already in the cache, it will return the cached shader object
      * @remark ShaderManager will handle all the garbage collections so DO NOT MANUALLY DELETE THE POINTER USING DELETE,
-     * use cachePop instead
+     * ref cachePop instead
      */
     template<typename T>
     T* getShaderObject(const std::string& name = "default");
@@ -163,28 +103,15 @@ public:
      * @return pointer pointing to the shader program object
      * @remark if the program is already in the cache, it will return the cached program object
      * @remark ShaderManager will handle all the garbage collections so DO NOT MANUALLY DELETE THE POINTER USING DELETE,
-     * use cachePop instead
+     * ref cachePop instead
      */
     template<size_t C>
     ShaderProgram * getShaderProgram(const std::string& name, const std::array<BaseShader*, C>& shaders);
 };
 
 template<typename T>
-void ShaderManager::cacheAdd(const std::string& name, BaseShader* shader) {
-    isShader<T>();
-    std::lock_guard<std::mutex> lock(mutex);
-    cacheName.emplace(ShaderManager::SHADER_TYPE_REF.find(typeid(T))->second + "/" + name, shader);
-    cacheID.emplace(shader->ID, shader->name);
-}
-
-template<typename T>
-void ShaderManager::cachePop(const std::string &name) {
-    isShader<T>();
-    std::lock_guard<std::mutex> lock(mutex);
-    auto shader = cacheName.find(ShaderManager::SHADER_TYPE_REF.find(typeid(T))->second + "/" + name);
-    if (shader == cacheName.end()) return;
-    delete shader->second;
-    cacheName.erase(shader);
+std::string ShaderManager::getShaderName(const std::string& name){
+    return ShaderManager::SHADER_TYPE_REF.find(typeid(T))->second + "/" + name;
 }
 
 template<typename T>
@@ -196,9 +123,10 @@ std::string ShaderManager::getShaderCode(const std::string &name) {
 
 template<typename T>
 bool ShaderManager::writeShaderCode(const std::string &name, const std::string &content) {
-    std::string path = ShaderManager::SHADER_ROOT + ShaderManager::SHADER_TYPE_REF.find(typeid(T))->second + "/" + name;
+    std::string path = ShaderManager::SHADER_ROOT + ShaderManager::getShaderName<T>(name);
     if(FileManager::writeFileStr(path, content)){
-        cachePop<T>(name);
+        // pop because the shader was updated
+        poolPop(name);
         return true;
     }
     return false;
@@ -207,6 +135,7 @@ bool ShaderManager::writeShaderCode(const std::string &name, const std::string &
 template<size_t C>
 ShaderProgram * ShaderManager::getShaderProgram(const std::string &name, const std::array<BaseShader *, C> &shaders) {
     checkGLState();
+    if(poolRetrieve(name) != nullptr) return dynamic_cast<ShaderProgram *>(poolRetrieve(name));
     bool hasVertex = false, hasFragment = false;
     for (auto i: shaders) {
         if(dynamic_cast<FragShader*>(i) != nullptr) {
@@ -219,7 +148,6 @@ ShaderProgram * ShaderManager::getShaderProgram(const std::string &name, const s
     }
     if (!hasVertex) spdlog::warn("Shader program {0} doesn't contain a vertex shader, this might result in errors", name);
     if (!hasFragment) spdlog::warn("Shader program {0} doesn't contain a fragment shader, this might result in errors", name);
-    if(cacheFind<ShaderProgram>(name) != nullptr) return cacheFind<ShaderProgram>(name);
     unsigned int program = glCreateProgram();
     for(auto i : shaders) {
         glAttachShader(program, i->ID);
@@ -227,8 +155,9 @@ ShaderProgram * ShaderManager::getShaderProgram(const std::string &name, const s
     glLinkProgram(program);
     std::string error = checkLinkSuccessful(program);
     if (error == "OK") {
-        cacheAdd<ShaderProgram>(name, new ShaderProgram(program, name));
-        return cacheFind<ShaderProgram>(name);
+        auto nameWithType = ShaderManager::getShaderName<ShaderProgram>(name);
+        poolAdd(nameWithType, new ShaderProgram(program, nameWithType));
+        return dynamic_cast<ShaderProgram *>(poolRetrieve(nameWithType));
     }
     spdlog::error("shader program generation failed, message: {0}", error);
     return nullptr;
@@ -239,26 +168,12 @@ void ShaderManager::isShader() {
     static_assert(std::is_base_of<BaseShader, T>::value, "T is not a shader or shader program!");
 }
 
-template<typename T>
-T* ShaderManager::cacheFind(const std::string &name) {
-    isShader<T>();
-    std::lock_guard<std::mutex> lock(mutex);
-    auto ans = cacheName.find(ShaderManager::SHADER_TYPE_REF.find(typeid(T))->second + "/" + name);
-    return ans == cacheName.end() ? nullptr : dynamic_cast<T*>(ans->second);
-}
-
-template<typename T>
-T* ShaderManager::cacheFind(const unsigned int &shaderID) {
-    isShader<T>();
-    std::lock_guard<std::mutex> lock(mutex);
-    return cacheFind<T>(cacheID.find(shaderID)->second);
-}
 
 template<typename T>
 T* ShaderManager::getShaderObject(const std::string &name) {
     checkGLState();
-    if (cacheFind<T>(name) != nullptr){
-        return cacheFind<T>(name);
+    if (poolRetrieve(name) != nullptr){
+        return dynamic_cast<T*>(poolRetrieve(name));
     }
     unsigned int shader = glCreateShader(SHADER_GL_ENUM.find(typeid(T))->second);
     std::string code = getShaderCode<T>(name);
@@ -267,12 +182,15 @@ T* ShaderManager::getShaderObject(const std::string &name) {
     glCompileShader(shader);
     std::string error = checkCompileSuccessful(shader);
     if (error == "OK") {
-        cacheAdd<T>(name, new T(shader, name));
-        return cacheFind<T>(name);
+        auto nameWithType = ShaderManager::getShaderName<T>(name);
+        poolAdd(nameWithType, new T(shader, nameWithType));
+        auto t = poolRetrieve(nameWithType);
+        return dynamic_cast<T*>(t);
     }
     spdlog::error("Vertex shader \"{1}\" creation failed, message: {0}", error, name);
     return nullptr;
 }
+
 
 
 

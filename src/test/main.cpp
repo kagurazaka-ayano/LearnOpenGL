@@ -6,7 +6,7 @@
  * 
 */
 
-#include <mathObjects/Color.h>
+#include "mathObjects/Color.h"
 #include <unordered_map>
 #include <iostream>
 #include <typeindex>

@@ -1,15 +1,15 @@
-/*
- * @parent: include/OpenGL/mathObjects
- * @file: Point2D.h
- * @author: ayano
- * @date: 9/18/23
+/**
+ * @parent include/OpenGL/mathObjects
+ * @file Point2D.h
+ * @author ayano
+ * @date 9/18/23
  * 
 */
 
 #ifndef OPENGL_POINT2D_H
 #define OPENGL_POINT2D_H
 
-#include <mathObjects/PointND.h>
+#include "mathObjects/PointND.h"
 
 class Point2D : public PointND<2> {
 public:

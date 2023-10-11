@@ -8,8 +8,22 @@
 
 #include "managers/ShaderManager.h"
 
-ShaderManager* ShaderManager::instance = nullptr;
-std::mutex ShaderManager::mutex;
+const auto ShaderManager::SHADER_TYPE_REF = std::unordered_map<std::type_index, std::string>{
+        {typeid(FragShader), "frag"},
+        {typeid(VertShader), "vert"},
+        {typeid(GeomShader), "geom"},
+        {typeid(ShaderProgram), "program"}
+};
+
+const auto ShaderManager::SHADER_GL_ENUM = std::unordered_map<std::type_index, int>{
+        {typeid(FragShader), GL_FRAGMENT_SHADER},
+        {typeid(VertShader), GL_VERTEX_SHADER},
+        {typeid(GeomShader), GL_GEOMETRY_SHADER},
+        {typeid(ShaderProgram), -1}
+};
+
+const std::string ShaderManager::SHADER_ROOT = "../src/shaders/";
+
 
 std::string ShaderManager::checkCompileSuccessful(const unsigned int &shader) {
     int success;
@@ -18,10 +32,6 @@ std::string ShaderManager::checkCompileSuccessful(const unsigned int &shader) {
     if (success) return "OK";
     glGetShaderInfoLog(shader, 512, nullptr, buffer);
     return buffer;
-}
-
-void ShaderManager::checkGLState() {
-    if (glGetString == nullptr) throw std::runtime_error("GLAD must be initialized in order to generate shader objects");
 }
 
 std::string ShaderManager::checkLinkSuccessful(const unsigned int &program) {
@@ -33,10 +43,4 @@ std::string ShaderManager::checkLinkSuccessful(const unsigned int &program) {
     return buffer;
 }
 
-void ShaderManager::cachePop(const unsigned int &shaderID) {
-    std::lock_guard<std::mutex> lock(mutex);
-    if(cacheID.find(shaderID) == cacheID.end()) return;
-    auto shaderName = cacheID[shaderID];
-    cacheID.erase(shaderID);
-    cacheName.erase(shaderName);
-}
+

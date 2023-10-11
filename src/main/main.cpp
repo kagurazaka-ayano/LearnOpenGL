@@ -1,13 +1,13 @@
-#include <glad/glad.h>
-#include <glfw/glfw3.h>
+#include "glad/glad.h"
+#include "glfw/glfw3.h"
 #include <iostream>
-#include <managers/ShaderManager.h>
-#include <glObjects/Vertex.h>
-#include <glObjects/VertexArray.h>
-#include <glObjects/Shader.h>
-#include <glObjects/TextureMapping.h>
+#include "managers/ShaderManager.h"
+#include "glObjects/Vertex.h"
+#include "glObjects/VertexArray.h"
+#include "glObjects/Shader.h"
+#include "glObjects/TextureMapping.h"
 
-#include <spdlog/spdlog.h>
+#include "spdlog/spdlog.h"
 
 #define WIDTH 800
 #define HEIGHT 800
@@ -47,9 +47,9 @@ int main()
     auto normalShaderProgram = manager->getShaderProgram<2>("name", {vertShader, defaultFragShader});
 
     VertexArray arr = VertexArray<3>({
-            Vertex(Point3D{0.5f, -0.5f, 0.0f}, Color(1.0f, 0.0f, 0.0f, 1.0f)),
-            Vertex(Point3D{-0.5f, -0.5f, 0.0f}, Color(0.0f, 1.0f, 0.0f, 1.0f)),
-            Vertex(Point3D{0.0f, 0.5f, 0.0f}, Color(0.0f, 0.0f, 1.0f, 1.0f))
+            Vertex(Point3D{0.5f, -0.5f, 0.0f}, Color("#5bcffa")),
+            Vertex(Point3D{-0.5f, -0.5f, 0.0f}, Color("#f5abb9")),
+            Vertex(Point3D{0.0f, 0.5f, 0.0f}, Color("#ffffff"))
     });
 
     unsigned int VAO;
@@ -63,8 +63,6 @@ int main()
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    normalShaderProgram->use();
 
     // key callback
     glfwSetKeyCallback(window, keyCallback);
@@ -87,7 +85,6 @@ int main()
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    
 
     normalShaderProgram->use();
     // render loop

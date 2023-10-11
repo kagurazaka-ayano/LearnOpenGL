@@ -1,8 +1,8 @@
-/*
- * @parent: include/OpenGL/mathObjects
- * @file: PointND.h
- * @author: ayano
- * @date: 9/15/23
+/**
+ * @parent include/OpenGL/mathObjects
+ * @file PointND.h
+ * @author ayano
+ * @date 9/15/23
  * 
 */
 
@@ -13,7 +13,7 @@
 #include <cmath>
 #include <array>
 #include <strstream>
-#include <spdlog/fmt/bundled/core.h>
+#include "spdlog/fmt/bundled/core.h"
 
 template<std::size_t D>
 class PointND {
@@ -65,10 +65,10 @@ public:
     float dist(const PointND<D>& p) const;
 
     /**
-     * @brief get the distance between two points, use this if the distance is very big
+     * @brief get the distance between two points, ref this if the distance is very big
      * @param p another point
      * @return the distance
-     * @remark only use this if the distance is extremely large
+     * @remark only ref this if the distance is extremely large
      */
     float distBig(const PointND<D>& p) const;
 
