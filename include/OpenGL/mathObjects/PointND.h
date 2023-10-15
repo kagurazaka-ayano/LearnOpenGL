@@ -12,7 +12,7 @@
 #include <string>
 #include <cmath>
 #include <array>
-#include <strstream>
+#include <sstream>
 #include "spdlog/fmt/bundled/core.h"
 
 template<std::size_t D>
@@ -182,7 +182,7 @@ PointND<D>::PointND(const std::initializer_list<float> &coord){
 
 template<std::size_t D>
 PointND<D>::operator std::string() const {
-    auto sout = std::strstream();
+    auto sout = std::stringstream();
     sout<< D << "D point at rectangular coord : (";
     for(int i = 0; i < D; i++){
         sout << coord[i];
